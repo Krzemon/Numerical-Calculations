@@ -1,0 +1,26 @@
+# Pliki i katalogi dla Pythona
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.venv/
+
+# Pliki i katalogi dla C++
+**/*.o
+**/*.obj
+**/*.exe
+**/*.so
+
+# Pliki ogólne dla różnych IDE
+**/.vscode/
+**/.idea/
+
+# Pliki binarne
+**/*.png
+**/*.jpg
+**/*.pdf
+**/*.gif
+
+# Pliki systemowe
+**/.DS_Store
+**/Thumbs.db
+
