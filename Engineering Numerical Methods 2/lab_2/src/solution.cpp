@@ -46,7 +46,6 @@ inline void calc_collocation(std::ostream& file, int base_type) {
                 A[j][i] = diff_u2(v[i], x_nodes[j]) -  diff_u1(v[i], x_nodes[j]);
             }
             b[j] = f(x_nodes[j]);
-            // b[j] = 2*(1 - 3*x_nodes[j] + x_nodes[j]*x_nodes[j] - M_PI*M_PI) * std::exp(-x_nodes[j]);
         }
 
         solve_Ax_b(A, c, b, n);
