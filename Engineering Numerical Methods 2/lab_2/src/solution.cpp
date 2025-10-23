@@ -4,7 +4,7 @@
 constexpr std::array<int,N_SIZE> N = {6, 7, 8, 9, 10}; // liczba funkcji bazowych
 
 inline void check_bc_for_base_type(int base_type) {
-    std::cout << "Sprawdzanie warunkow brzegowych dla funkcji bazowej 1:\n";
+    std::cout << "Sprawdzanie warunkow brzegowych dla funkcji bazowej " << base_type << "\n";
     int n = 10;
     std::vector<std::function<double(double)>> v;
     if(base_type == 1) {
