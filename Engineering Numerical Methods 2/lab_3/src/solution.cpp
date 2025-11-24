@@ -12,9 +12,9 @@
 #include "functions.hpp"
 #include "config.hpp"
 
-void calc_zad_1(std::ofstream& out, int param);
+void calc_zad_1(std::ofstream& out);
 void calc_zad_2(std::ofstream& out, int M);
-void calc_zad_3(std::ofstream& out, int param);
+void calc_zad_3(std::ofstream& out, int M);
 
 void general_eigen(const std::vector<std::vector<double>>& A,
                    const std::vector<std::vector<double>>& B,
@@ -52,7 +52,7 @@ void general_eigen(const std::vector<std::vector<double>>& A,
     gsl_matrix_free(evec);
 }
 
-void calc_zad_1(std::ofstream& out, int param) {
+void calc_zad_1(std::ofstream& out) {
     int M = 5;
     auto xnodes = generate_nodes(M,1.0);
     std::vector<std::vector<double>> S,O;
