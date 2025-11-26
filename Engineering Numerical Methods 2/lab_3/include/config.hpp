@@ -40,7 +40,7 @@ inline void write_u_of_x_file(const fs::path& path, int M,
 
     double xa = xnodes.front();
     double xb = xnodes.back();
-    double dx = DXI;
+    double dx = 0.001; // duża liczba punktów, żeby było gładko
 
     for(double x=xa; x<=xb+1e-12; x+=dx){
         f << std::setprecision(12) << x;
