@@ -18,32 +18,35 @@ public:
     double y;
 };
 
-constexpr int nx = 3;
 constexpr double x_min = 0;
 constexpr double x_max = M_PI;
-constexpr double dx = x_max / (nx - 1);
+extern int nx;
+extern double dx;
 
-constexpr int ny = 3;
 constexpr double y_min = 0;
 constexpr double y_max = M_PI;
-constexpr double dy = y_max / (ny - 1);
+extern int ny;
+extern double dy;
 
-constexpr int M = (ny - 1) * (nx - 1); // liczba elementów
-constexpr int num_nodes = nx*ny;       // liczba węzłów
-constexpr int N_max = 4*nx*ny;         // liczba funkcji bazowych
-constexpr double delta_x = 0.001;      // krok do obliczania pochodnych
+extern int M;           // liczba elementów
+extern int num_nodes;   // liczba węzłów
+extern int N_max;       // liczba funkcji bazowych
+extern double delta_x;  // krok do obliczania pochodnych
 
 constexpr int l_alpha_beta[4][2] = {{0, 0},{1, 0},{1, 1},{0, 1}};
 
-extern std::array<Node,num_nodes> global_nodes;               // tablica węzłów globalnych
-extern std::array<std::array<const Node*, 4>, M> local_nodes; // tablica węzłów lokalnych
+// extern std::array<Node,num_nodes> global_nodes;               // tablica węzłów globalnych
+// extern std::array<std::array<const Node*, 4>, M> local_nodes; // tablica węzłów lokalnych
+
+extern std::vector<Node> global_nodes;                        // tablica węzłów globalnych
+extern std::vector<std::array<const Node*, 4>> local_nodes;   // tablica węzłów lokalnych
+
 extern std::vector<std::vector<double>> S;                    // globalna macierz sztywności
 extern std::vector<double> F;                                 // globalny wektor obciążenia
 extern std::vector<double> c;                                 // wektor rozwiazań 
 
-// std::vector<std::vector<double>> A(n, std::vector<double>(n, 0.0));
-// std::vector<double> c(n, 0.0); // wspolczynniki rozwiazania
-// std::vector<double> b(n, 0.0);
+extern std::vector<std::vector<double>> S_original;
+extern std::vector<double> F_original;
 
 /**
  * @brief Funkcja rho(x,y)
@@ -106,7 +109,28 @@ double x(int m, double xi_1, double xi_2);
 double y(int m, double xi_1, double xi_2);
 
 /**
+ * @brief Aktualizuje parametry siatki
+ */
+void update_params(int new_nx, int new_ny);
+
+/**
  * @brief Składa globalna macierz sztywności i wektor obciążenia
  */
 void assemble_global_matrices_MES_2D();
 
+// void assemble_matrices();
+
+/**
+ * @brief Modyfikuje macierz sztywnosci S oraz wektor obciazen F o warunki brzegowe
+ */
+void border_conditions();
+
+/**
+ * @brief Oblicza calke funkcjonalna (Zasada Rayleigha-Ritz'a)
+ */
+double functional_integral();
+
+/**
+ * @brief Rozwiązanie numeryczne u(x,y) na podstawie wektora współczynników c
+ */
+double u_solution(double x, double y);

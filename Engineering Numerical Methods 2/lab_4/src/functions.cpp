@@ -1,10 +1,23 @@
 #include "functions.hpp"
 
-std::array<Node,num_nodes> global_nodes;
-std::array<std::array<const Node*, 4>, M> local_nodes;
+int nx = 3;
+double dx = x_max / (nx - 1);
+int ny = 3;
+double dy = y_max / (ny - 1);
+
+int M = (ny - 1) * (nx - 1);
+int num_nodes = nx*ny;
+int N_max = 4*nx*ny;
+double delta_x = 0.001;
+
+std::vector<Node> global_nodes(num_nodes);
+std::vector<std::array<const Node*, 4>> local_nodes(M);
 std::vector<std::vector<double>> S(N_max, std::vector<double>(N_max, 0.0));
 std::vector<double> F(N_max, 0.0);
 std::vector<double> c(N_max, 0.0);
+
+std::vector<std::vector<double>> S_original(N_max, std::vector<double>(N_max, 0.0));
+std::vector<double> F_original(N_max, 0.0);
 
 double rho(double x, double y) {
     return std::sin(2*y) * std::sin(x)*std::sin(x);
@@ -79,10 +92,10 @@ auto shape_hermit_functions(int alpha, int i) -> std::function<double(double)> {
 
 double weight_functions(int i, double xi_1, double xi_2) {
     switch(i) {
-        case 1: return 0.25 * (1.0 - xi_1) * (1.0 - xi_2);
-        case 2: return 0.25 * (1.0 + xi_1) * (1.0 - xi_2);
-        case 3: return 0.25 * (1.0 + xi_1) * (1.0 + xi_2);
-        case 4: return 0.25 * (1.0 - xi_1) * (1.0 + xi_2);
+        case 0: return 0.25 * (1.0 - xi_1) * (1.0 - xi_2);
+        case 1: return 0.25 * (1.0 + xi_1) * (1.0 - xi_2);
+        case 2: return 0.25 * (1.0 + xi_1) * (1.0 + xi_2);
+        case 3: return 0.25 * (1.0 - xi_1) * (1.0 + xi_2);
     }
     return 0.0;
 }
@@ -131,16 +144,34 @@ double y(int m, double xi_1, double xi_2) {
     return yy;
 }
 
+void update_params(int new_nx, int new_ny) {
+    nx = new_nx;
+    dx = x_max / (nx - 1);
+    ny = new_ny;
+    dy = y_max / (ny - 1);
+
+    M = (ny - 1) * (nx - 1);
+    num_nodes = nx*ny;
+    N_max = 4*nx*ny;
+
+    global_nodes.assign(num_nodes, Node{});
+    local_nodes.assign(M, {nullptr, nullptr, nullptr, nullptr});
+    S.assign(N_max, std::vector<double>(N_max, 0.0));
+    F.assign(N_max, 0.0);
+    c.assign(N_max, 0.0);
+}
+
 void assemble_global_matrices_MES_2D() {
     for (int m=1; m<=M; ++m) {
         double Jm = (local_nodes[m-1][1]->x - local_nodes[m-1][0]->x) * (local_nodes[m-1][3]->y - local_nodes[m-1][0]->y) / 4.0;
+        
         for (int l1=1; l1<=4; ++l1) {
             int alpha1 = l_alpha_beta[l1-1][0];
             int beta1  = l_alpha_beta[l1-1][1];
             for (int i1=0; i1<=1; ++i1) {
                 for (int i2=0; i2<=1; ++i2) {
                     // Obliczanie elementu wektora F
-                    std::size_t p = global_index(local_nodes[m-1][l1-1]->idx, i1, i2);
+                    int p = global_index(local_nodes[m-1][l1-1]->idx, i1, i2);
                     double F_result = integrate(
                         [m, Jm, alpha1, beta1, i1, i2](double xi1) -> double {
                             return integrate(
@@ -158,7 +189,7 @@ void assemble_global_matrices_MES_2D() {
                         for (int j1=0; j1<=1; ++j1) {
                             for (int j2=0; j2<=1; ++j2) {
                                 // Obliczanie elementu macierzy S
-                                std::size_t q = global_index(local_nodes[m-1][l2-1]->idx, j1, j2);
+                                int q = global_index(local_nodes[m-1][l2-1]->idx, j1, j2);
                                 double S_result = integrate(
                                     [Jm, alpha1, beta1, alpha2, beta2, i1, i2, j1, j2](double xi1) -> double {
                                         return integrate(
@@ -180,26 +211,73 @@ void assemble_global_matrices_MES_2D() {
         }
     }
 
-    for (std::size_t m = 0; m < M; ++m) {
-        for (std::size_t l = 0; l < 4; ++l) {
-            const Node *node = local_nodes[m][l];
+    S_original = S;
+    F_original = F;
+}
+
+void border_conditions() {
+    for (int m=1; m<=M; ++m) {
+        for (int l=1; l<=4; ++l) {
+            const Node *node = local_nodes[m-1][l-1];
             double eps = 1e-6;
             if (std::abs(node->x - x_min) < eps || std::abs(node->x - x_max) < eps || std::abs(node->y - y_min) < eps || std::abs(node->y - y_max) < eps) {
-                for (std::size_t i1 = 0; i1 <= 1; ++i1) {
-                    for (std::size_t i2 = 0; i2 <= 1; ++i2) {
+                for (int i1 = 0; i1 <= 1; ++i1) {
+                    for (int i2 = 0; i2 <= 1; ++i2) {
                         if (i1 * i2 == 1)
                             continue;
-                        std::size_t p = global_index(node->idx, i1, i2);
-                        for (std::size_t q = 0; q < N_max; ++q) {
-                            S[p - 1][q] = 0.0;
-                            S[q][p - 1] = 0.0;
+                        int p = global_index(node->idx, i1, i2);
+                        for (int q=0; q<N_max; ++q) {
+                            S[p-1][q] = 0.0;
+                            S[q][p-1] = 0.0;
                         }
-                        S[p - 1][p - 1] = 1.0;
-                        F[p - 1] = 0.0;
+                        S[p-1][p-1] = 1.0;
+                        F[p-1] = 0.0;
                     }
                 }
             }
         }
     }
+}
 
+double functional_integral() {
+    double a_num=0.0;
+    for (int i=0; i<N_max; ++i) {
+        for (int j=0; j<N_max; ++j) {
+            a_num -= c[i]*c[j]*S_original[i][j]/2.0; 
+        }
+        a_num += c[i]*F_original[i];
+    }
+    return a_num;
+}
+
+double u_solution(double x, double y) {
+    // Znajdź element, w którym znajduje się punkt (x, y)
+    for (int m = 1; m <= M; ++m) {
+        double x_m_1 = local_nodes[m-1][0]->x;
+        double x_m_2 = local_nodes[m-1][1]->x;
+        double y_m_1 = local_nodes[m-1][0]->y;
+        double y_m_4 = local_nodes[m-1][3]->y;
+
+        if (x < x_m_1 || x >= x_m_2)
+            continue;
+        if (y < y_m_1 || y >= y_m_4)
+            continue;
+
+        double u = 0.0;
+        double xi1 = (x - (x_m_1 + x_m_2) / 2.0) * 2.0/(x_m_2 - x_m_1);
+        double xi2 = (y - (y_m_1 + y_m_4) / 2.0) * 2.0/(y_m_4 - y_m_1);
+
+        for (int l = 1; l <= 4; ++l) {
+            int alpha = l_alpha_beta[l-1][0];
+            int beta  = l_alpha_beta[l-1][1];
+            for (int i1 = 0; i1 <= 1; ++i1) {
+                for (int i2 = 0; i2 <= 1; ++i2) {
+                    int p = global_index(local_nodes[m - 1][l - 1]->idx, i1, i2);
+                    u += c[p - 1] * shape_hermit_functions(alpha, i1)(xi1) * shape_hermit_functions(beta, i2)(xi2);
+                }
+            }
+        }
+        return u;
+    }
+    return 0.0;
 }

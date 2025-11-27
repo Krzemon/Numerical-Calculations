@@ -17,11 +17,16 @@ set(PYTHON_DIR ${PROJECT_SOURCE_DIR}/python)
 
 # --- Pliki wynikowe ---
 set(DATA_FILE_ZAD2 ${DATA_DIR}/zad_2.dat)
+set(DATA_FILE_ZAD8_3 ${DATA_DIR}/zad_8_3.dat)
+set(DATA_FILE_ZAD8_10 ${DATA_DIR}/zad_8_10.dat)
 
 set(PLOT_FILE_ZAD2 ${PLOTS_DIR}/zad_2_nodes.png)
+set(PLOT_FILE_ZAD8_3 ${PLOTS_DIR}/zad_8_3_nodes.png)
+set(PLOT_FILE_ZAD8_10 ${PLOTS_DIR}/zad_8_10_nodes.png)
 
 # --- Skrypty wykresow ---
 set(PLOT_SCRIPT_ZAD2 ${PYTHON_DIR}/plot_zad2.py)
+set(PLOT_SCRIPT_ZAD8 ${PYTHON_DIR}/plot_zad8.py)
 
 # --- Zrodla ---
 file(GLOB SOURCES "${SRC_DIR}/*.cpp")
@@ -39,4 +44,6 @@ add_custom_command(
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
     COMMAND python3 ${PLOT_SCRIPT_ZAD2} ${DATA_FILE_ZAD2} ${PLOT_FILE_ZAD2} "Siatka elementów z węzłami"
+    COMMAND python3 ${PLOT_SCRIPT_ZAD8} ${DATA_FILE_ZAD8_3} ${PLOT_FILE_ZAD8_3}
+    COMMAND python3 ${PLOT_SCRIPT_ZAD8} ${DATA_FILE_ZAD8_10} ${PLOT_FILE_ZAD8_10}
 )
