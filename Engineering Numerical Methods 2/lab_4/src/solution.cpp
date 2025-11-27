@@ -87,7 +87,5 @@ void calc_zad_8(std::ofstream& out, int n) {
             out << x << " " << y << " " << u_solution(x, y) << " " << u_analytical(x, y) << std::endl;
         }
     }
-
     std::cout << "Zapisano dane potrzebne do wygenerowania wykresu konturowego rozwiązania numerycznego dla nx = ny =" << n << " oraz rozwiązania dokładnego.\n";
-
 }

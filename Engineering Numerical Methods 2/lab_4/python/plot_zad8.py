@@ -20,17 +20,15 @@ def load_data_with_header(filename):
     x, y, u_num, u_exact = data[:, 0], data[:, 1], data[:, 2], data[:, 3]
     return x, y, u_num, u_exact, n
 
-
 def prep_image_data(x, y, u):
-    """Przygotowuje dane do contourf (zamiana na siatkę 2D)."""
     xs = np.unique(x)
     ys = np.unique(y)
-    X, Y = np.meshgrid(xs, ys)
 
-    U = u.reshape(len(ys), len(xs))
+    # KLUCZOWA POPRAWKA — właściwe ustawienie siatki
+    U = u.reshape(len(xs), len(ys)).T
+
     extent = [xs.min(), xs.max(), ys.min(), ys.max()]
     return U, extent
-
 
 def main():
     if len(sys.argv) != 3:

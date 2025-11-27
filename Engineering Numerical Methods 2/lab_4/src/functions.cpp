@@ -24,10 +24,14 @@ double rho(double x, double y) {
 };
 
 double u_analytical(double x, double y) {
-    double exp_2x = std::exp(2*x);
-    double exp_2pi = std::exp(2*M_PI);
-    return std::sin(2*y) * ( ( (exp_2x*(1.0/exp_2pi - 1) - (exp_2pi - 1))/exp_2x ) / (exp_2pi - 1.0/exp_2pi) + 2.0 - std::cos(2*x)) / 16.0;
-};
+    double e2x  = exp(2*x);
+    double em2x = exp(-2*x);
+    double e2p  = exp(2*M_PI);
+    double em2p = exp(-2*M_PI);
+    double pimpi = e2p - em2p;
+
+    return sin(2*y) * ( e2x*(em2p - 1)/pimpi - em2x*(e2p - 1)/pimpi + 2.0 - cos(2*x) ) / 16.0;
+}
 
 double diff_u1(const std::function<double(double)>& u, double x, double dx) {
     return (u(x + dx) - u(x - dx)) / (2*dx);
