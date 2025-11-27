@@ -18,7 +18,7 @@ void save_nodes(std::ofstream& out) {
 }
 
 void calc_zad_1() {
-    std::cout << "Parametry zdefiniowane w pliku src/functions.cpp:\n";
+    std::cout << "Parametry zdefiniowane w pliku src/functions.cpp\n";
 }
 
 void calc_zad_2(std::ofstream& out) {
@@ -27,13 +27,26 @@ void calc_zad_2(std::ofstream& out) {
     std::cout << "Wygenerowano siatke (elementy, węzły lokalne i globalne)\n";
 }
 
-void calc_zad_3() {
+void calc_zad_3(std::ofstream& out) {
     assemble_global_matrices_MES_2D();
+    // zapis macierzy S do pliku
+    for(int i=0; i<N_max; i++){
+        for(int j=0;j<N_max;j++) 
+            out << std::setprecision(12) << S[i][j] << " ";
+        out << "\n";
+    }
+
     std::cout << "Złożono macierz sztywności S oraz wektor obciążeń F\n";
 }
 
-void calc_zad_4() {
+void calc_zad_4(std::ofstream& out) {
     border_conditions();
+    // zapis macierzy S do pliku
+    for(int i=0; i<N_max; i++){
+        for(int j=0;j<N_max;j++) 
+            out << std::setprecision(12) << S[i][j] << " ";
+        out << "\n";
+    }
     std::cout << "Uwzględniono warunki brzegowe dla macierzy sztywności S oraz wektora obciążeń F\n";
 }
 
@@ -87,5 +100,5 @@ void calc_zad_8(std::ofstream& out, int n) {
             out << x << " " << y << " " << u_solution(x, y) << " " << u_analytical(x, y) << std::endl;
         }
     }
-    std::cout << "Zapisano dane potrzebne do wygenerowania wykresu konturowego rozwiązania numerycznego dla nx = ny =" << n << " oraz rozwiązania dokładnego.\n";
+    std::cout << "Zapisano dane potrzebne do wygenerowania wykresu konturowego rozwiązania numerycznego dla nx=ny=" << n << " oraz rozwiązania dokładnego.\n";
 }

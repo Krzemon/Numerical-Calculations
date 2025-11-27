@@ -11,10 +11,14 @@ std::cout << "------------------ZADANIE 2------------------\n";
     std::cout << "Zapisano: " << file_2.path << "\n";
 
 std::cout << "------------------ZADANIE 3------------------\n";
-    calc_zad_3();
+    auto file_3 = prepareDataFile("zad_3.dat");
+    calc_zad_3(file_3.out);
+    std::cout << "Zapisano: " << file_3.path << "\n";
 
 std::cout << "------------------ZADANIE 4------------------\n";
-    calc_zad_4();
+    auto file_4 = prepareDataFile("zad_4.dat");
+    calc_zad_4(file_4.out);
+    std::cout << "Zapisano: " << file_4.path << "\n";
 
 std::cout << "------------------ZADANIE 5------------------\n";
     calc_zad_5();

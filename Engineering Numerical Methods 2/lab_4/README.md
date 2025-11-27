@@ -25,13 +25,7 @@
 #### · data - Pliki z wynikami
 #### · plots - Pliki z wykresami
 
-
-## Zadanie 1: 
-· plot_zad1.py – mapa ciepła macierzy S.
-
-## Zadanie 2:
-· plot_zad2_E.py – wykres wartości własnych E_mu(alpha) dla podanego pliku danych, obsługuje dowolne M.
-· plot_zad2_psi.py – wykres funkcji własnych u_mu(x) dla α=1.4 dla dowolnego M.
-
-## Zadanie 3: 
-· plot_zad3.py – wykres wartości własnych dla M=10 i M=30, obsługujący bloki danych w jednym pliku.
+· plot_heatmap.py - Skrypt do tworzenia wykresów mapy ciepła macierzy sztywności S
+· plot_zad2.py - Skrypt do tworszenia obrazu siatki obliczeniowej elementy, węzły lokalne i globalne
+· plot_zad8.py - Skrypt do tworzenia wykresów funkcji rozwiązania u(x,y) analitycznej i numerycznej
+· plot_zad8.ipynb - Notatnik Jupyter do tworzenia wykresów funkcji rozwiązania u(x,y) analitycznej i numerycznej z wykorzystaniem biblioteki plotly dla wykresów 3D

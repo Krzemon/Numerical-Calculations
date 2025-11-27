@@ -35,9 +35,6 @@ extern double delta_x;  // krok do obliczania pochodnych
 
 constexpr int l_alpha_beta[4][2] = {{0, 0},{1, 0},{1, 1},{0, 1}};
 
-// extern std::array<Node,num_nodes> global_nodes;               // tablica węzłów globalnych
-// extern std::array<std::array<const Node*, 4>, M> local_nodes; // tablica węzłów lokalnych
-
 extern std::vector<Node> global_nodes;                        // tablica węzłów globalnych
 extern std::vector<std::array<const Node*, 4>> local_nodes;   // tablica węzłów lokalnych
 
@@ -117,8 +114,6 @@ void update_params(int new_nx, int new_ny);
  * @brief Składa globalna macierz sztywności i wektor obciążenia
  */
 void assemble_global_matrices_MES_2D();
-
-// void assemble_matrices();
 
 /**
  * @brief Modyfikuje macierz sztywnosci S oraz wektor obciazen F o warunki brzegowe

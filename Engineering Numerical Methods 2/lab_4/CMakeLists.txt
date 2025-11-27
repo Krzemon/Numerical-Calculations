@@ -17,15 +17,20 @@ set(PYTHON_DIR ${PROJECT_SOURCE_DIR}/python)
 
 # --- Pliki wynikowe ---
 set(DATA_FILE_ZAD2 ${DATA_DIR}/zad_2.dat)
+set(DATA_FILE_ZAD3 ${DATA_DIR}/zad_3.dat)
+set(DATA_FILE_ZAD4 ${DATA_DIR}/zad_4.dat)
 set(DATA_FILE_ZAD8_3 ${DATA_DIR}/zad_8_3.dat)
 set(DATA_FILE_ZAD8_10 ${DATA_DIR}/zad_8_10.dat)
 
 set(PLOT_FILE_ZAD2 ${PLOTS_DIR}/zad_2_nodes.png)
-set(PLOT_FILE_ZAD8_3 ${PLOTS_DIR}/zad_8_3_nodes.png)
-set(PLOT_FILE_ZAD8_10 ${PLOTS_DIR}/zad_8_10_nodes.png)
+set(PLOT_FILE_ZAD3 ${PLOTS_DIR}/zad_3_S_matrix.png)
+set(PLOT_FILE_ZAD4 ${PLOTS_DIR}/zad_4_S_matrix.png)
+set(PLOT_FILE_ZAD8_3 ${PLOTS_DIR}/zad_8_n3_solution.png)
+set(PLOT_FILE_ZAD8_10 ${PLOTS_DIR}/zad_8_n10_solution.png)
 
 # --- Skrypty wykresow ---
 set(PLOT_SCRIPT_ZAD2 ${PYTHON_DIR}/plot_zad2.py)
+set(PLOT_SCRIPT_HEATMAP ${PYTHON_DIR}/plot_heatmap.py)
 set(PLOT_SCRIPT_ZAD8 ${PYTHON_DIR}/plot_zad8.py)
 
 # --- Zrodla ---
@@ -44,6 +49,8 @@ add_custom_command(
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
     COMMAND python3 ${PLOT_SCRIPT_ZAD2} ${DATA_FILE_ZAD2} ${PLOT_FILE_ZAD2} "Siatka elementów z węzłami"
+    COMMAND python3 ${PLOT_SCRIPT_HEATMAP} ${DATA_FILE_ZAD3} ${PLOT_FILE_ZAD3} "Mapa ciepła macierzy S przed modyfikacją"
+    COMMAND python3 ${PLOT_SCRIPT_HEATMAP} ${DATA_FILE_ZAD4} ${PLOT_FILE_ZAD4} "Mapa ciepła macierzy S po modyfikacji"
     COMMAND python3 ${PLOT_SCRIPT_ZAD8} ${DATA_FILE_ZAD8_3} ${PLOT_FILE_ZAD8_3}
     COMMAND python3 ${PLOT_SCRIPT_ZAD8} ${DATA_FILE_ZAD8_10} ${PLOT_FILE_ZAD8_10}
 )
