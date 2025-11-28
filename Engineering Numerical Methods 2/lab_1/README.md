@@ -1,4 +1,4 @@
-## Metoda shootingu w 1D, metoda różnic skończonych, metoda Numerowa.
+## Metoda shootingu w 1D, metoda różnic skończonych, metoda Numerowa
 
 # Wykonanie:
 #### -> cmake -S . -B build

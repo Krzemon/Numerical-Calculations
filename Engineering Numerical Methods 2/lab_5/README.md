@@ -1,4 +1,4 @@
-## Rozwiązywanie zwyczajnego równania różniczkowego z warunkami brzegowymi przy użyciu baz funkcyjnych - metody: kolokacji,najmniejszych kwadratów, Galerkina
+## Metoda elementów skończonych w 2D, elementy trójkątne, liniowe funckje kształtu
 
 # Wykonanie:
 #### -> cmake -S . -B build
@@ -24,3 +24,5 @@
 ### ...tworzone później
 #### · data - Pliki z wynikami
 #### · plots - Pliki z wykresami
+
+· plot_zad2.py - Skrypt do tworszenia obrazu siatki obliczeniowej elementy, węzły lokalne i globalne
