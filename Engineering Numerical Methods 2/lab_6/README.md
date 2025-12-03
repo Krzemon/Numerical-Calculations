@@ -1,4 +1,4 @@
-## Metoda elementów skończonych w 2D, elementy trójkątne, liniowe funckje kształtu
+## MES 2D w dziedzinie czasu: równanie falowe
 
 # Wykonanie:
 #### -> cmake -S . -B build
@@ -25,4 +25,5 @@
 #### · data - Pliki z wynikami
 #### · plots - Pliki z wykresami
 
-· plot_zad2.py - Skrypt do tworszenia obrazu siatki obliczeniowej elementy, węzły lokalne i globalne
+· plot_zad2.py - Skrypt do tworszenia obrazu siatki obliczeniowej elementy, węzły lokalne i globalne (popraw)
+ 
