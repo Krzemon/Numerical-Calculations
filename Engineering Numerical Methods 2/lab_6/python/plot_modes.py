@@ -6,7 +6,7 @@ import numpy as np
 
 def main():
     if len(sys.argv)!=4:
-        print("Uzycie: python3 plot_zad1.py <plik_danych> <plik_wykresu> <tytul>")
+        print("Uzycie: python3 plot_modes.py <plik_danych> <plik_wykresu> <tytul>")
         return
 
     data_file=Path(sys.argv[1])
@@ -21,8 +21,8 @@ def main():
     x, y, phi = data[:,0], data[:,1], data[:,2]
 
     plt.figure(figsize=(8,6))
-    plt.scatter(x, y, c=phi, s=8)
-    plt.colorbar(label="phi")
+    plt.scatter(x, y, c=phi, s=8, cmap='RdBu')
+    plt.colorbar(label="u(x,y)")
     plt.title(title)
     plt.xlim(-5, 5)
     plt.ylim(-5, 5)

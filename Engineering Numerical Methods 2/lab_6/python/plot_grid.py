@@ -43,7 +43,7 @@ def load_sections(filename):
 
 def main():
     if len(sys.argv) != 4:
-        print("Użycie: python3 plot_zad1_grid.py <plik_danych> <plik_png> <tytuł>")
+        print("Użycie: python3 plot_grid.py <plik_danych> <plik_png> <tytuł>")
         return
 
     data_file = Path(sys.argv[1])
@@ -60,7 +60,7 @@ def main():
     x = nodes[:, 1]
     y = nodes[:, 2]
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(16, 16))
     plt.scatter(x, y, color="blue", zorder=3)
 
     # opisy węzłów

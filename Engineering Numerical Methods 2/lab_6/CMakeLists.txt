@@ -3,7 +3,7 @@ project(lab_06)
 set(PROJECT_AUTHOR "Przemysław Ryś")
 
 # --- Ustawienia kompilacji ---
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
@@ -19,7 +19,6 @@ set(PYTHON_DIR ${PROJECT_SOURCE_DIR}/python)
 set(DATA_FILE_ZAD1 ${DATA_DIR}/zad_1.dat)
 set(DATA_FILE_ZAD2_E ${DATA_DIR}/zad_2_global_E.dat)
 set(DATA_FILE_ZAD2_O ${DATA_DIR}/zad_2_global_O.dat)
-
 set(DATA_FILE_ZAD2_MODE_0 ${DATA_DIR}/mode_0.dat)
 set(DATA_FILE_ZAD2_MODE_1 ${DATA_DIR}/mode_1.dat)
 set(DATA_FILE_ZAD2_MODE_2 ${DATA_DIR}/mode_2.dat)
@@ -30,10 +29,14 @@ set(DATA_FILE_ZAD2_MODE_6 ${DATA_DIR}/mode_6.dat)
 set(DATA_FILE_ZAD2_MODE_7 ${DATA_DIR}/mode_7.dat)
 set(DATA_FILE_ZAD2_MODE_8 ${DATA_DIR}/mode_8.dat)
 set(DATA_FILE_ZAD2_MODE_9 ${DATA_DIR}/mode_9.dat)
+set(DATA_FILE_ZAD5 ${DATA_DIR}/zad_5.dat)
+set(DATA_FILE_ZAD6_1 ${DATA_DIR}/zad_6_1.dat)
+set(DATA_FILE_ZAD6_2 ${DATA_DIR}/zad_6_2.dat)
+set(DATA_FILE_ZAD6_3 ${DATA_DIR}/zad_6_3.dat)
+set(DATA_FILE_ZAD6_4 ${DATA_DIR}/zad_6_4.dat)
+set(DATA_FILE_ZAD6_5 ${DATA_DIR}/zad_6_5.dat)
 
-# set(DATA_FILE_ZAD2_MODES ${DATA_DIR}/zad_2_modes.dat)
-# set(DATA_FILE_ZAD3 ${DATA_DIR}/zad_3.dat)
-# set(DATA_FILE_ZAD6 ${DATA_DIR}/zad_6.dat)
+set(DATA_FILE_GIF ${DATA_DIR}/GIF.dat)
 
 set(PLOT_FILE_ZAD1 ${PLOTS_DIR}/zad_1_grid.png)
 set(PLOT_FILE_ZAD2_E ${PLOTS_DIR}/zad_2_E_heatmap.png)
@@ -48,25 +51,29 @@ set(PLOT_FILE_ZAD2_MODE_6 ${PLOTS_DIR}/zad_2_mode_6.png)
 set(PLOT_FILE_ZAD2_MODE_7 ${PLOTS_DIR}/zad_2_mode_7.png)
 set(PLOT_FILE_ZAD2_MODE_8 ${PLOTS_DIR}/zad_2_mode_8.png)
 set(PLOT_FILE_ZAD2_MODE_9 ${PLOTS_DIR}/zad_2_mode_9.png)
+set(PLOT_FILE_ZAD5 ${PLOTS_DIR}/zad_5.png)
+set(PLOT_FILE_ZAD6_1 ${PLOTS_DIR}/zad_6_1.png)
+set(PLOT_FILE_ZAD6_2 ${PLOTS_DIR}/zad_6_2.png)
+set(PLOT_FILE_ZAD6_3 ${PLOTS_DIR}/zad_6_3.png)
+set(PLOT_FILE_ZAD6_4 ${PLOTS_DIR}/zad_6_4.png)
+set(PLOT_FILE_ZAD6_5 ${PLOTS_DIR}/zad_6_5.png)
 
-# set(PLOT_FILE_ZAD2_MODES ${PLOTS_DIR}/zad_2_modes.png)
-# set(PLOT_FILE_ZAD3 ${PLOTS_DIR}/zad_3_grid.png)
-# set(PLOT_FILE_ZAD6 ${PLOTS_DIR}/zad_6_grid.png)
+set(PLOT_FILE_GIF ${PLOTS_DIR}/newmark.gif)
 
 # --- Skrypty wykresow ---
 set(PLOT_SCRIPT_GRID ${PYTHON_DIR}/plot_grid.py)
 set(PLOT_SCRIPT_HEATMAP ${PYTHON_DIR}/plot_heatmap.py)
 set(PLOT_SCRIPT_MODES ${PYTHON_DIR}/plot_modes.py)
+set(PLOT_SCRIPT_CHART ${PYTHON_DIR}/plot_chart.py)
 
-# set(PLOT_SCRIPT_ZAD3 ${PYTHON_DIR}/plot_zad3.py)
-# set(PLOT_SCRIPT_ZAD6 ${PYTHON_DIR}/plot_zad6.py)
+set(PLOT_SCRIPT_GIF ${PYTHON_DIR}/create_gif.py)
 
 # --- Zrodla ---
 file(GLOB SOURCES "${SRC_DIR}/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-find_package(LAPACK REQUIRED)
 # --- Linkowanie ---
+find_package(LAPACK REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE gsl gslcblas m ${LAPACK_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
@@ -80,7 +87,6 @@ add_custom_command(
     COMMAND python3 ${PLOT_SCRIPT_GRID} ${DATA_FILE_ZAD1} ${PLOT_FILE_ZAD1} "Siatka węzłów"
     COMMAND python3 ${PLOT_SCRIPT_HEATMAP} ${DATA_FILE_ZAD2_E} ${PLOT_FILE_ZAD2_E} "Mapa ciepła macierzy sztywności E"
     COMMAND python3 ${PLOT_SCRIPT_HEATMAP} ${DATA_FILE_ZAD2_O} ${PLOT_FILE_ZAD2_O} "Mapa ciepła macierzy całek przekrywania O"
-
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_0} ${PLOT_FILE_ZAD2_MODE_0} "mod 0"
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_1} ${PLOT_FILE_ZAD2_MODE_1} "mod 1"
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_2} ${PLOT_FILE_ZAD2_MODE_2} "mod 2"
@@ -91,8 +97,13 @@ add_custom_command(
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_7} ${PLOT_FILE_ZAD2_MODE_7} "mod 7"
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_8} ${PLOT_FILE_ZAD2_MODE_8} "mod 8"
     COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD2_MODE_9} ${PLOT_FILE_ZAD2_MODE_9} "mod 9"
+    COMMAND python3 ${PLOT_SCRIPT_CHART} ${DATA_FILE_ZAD5} ${PLOT_FILE_ZAD5}
+    COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD6_1} ${PLOT_FILE_ZAD6_1} "T = 0"
+    COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD6_2} ${PLOT_FILE_ZAD6_2} "T = Tmax * 1/4"
+    COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD6_3} ${PLOT_FILE_ZAD6_3} "T = Tmax * 2/4"
+    COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD6_4} ${PLOT_FILE_ZAD6_4} "T = Tmax * 3/4"
+    COMMAND python3 ${PLOT_SCRIPT_MODES} ${DATA_FILE_ZAD6_5} ${PLOT_FILE_ZAD6_5} "T = Tmax * 4/4"
 
+    COMMAND python3 ${PLOT_SCRIPT_GIF} ${DATA_FILE_GIF} ${PLOT_FILE_GIF}
 
-    # COMMAND python3 ${PLOT_SCRIPT_ZAD3} ${DATA_FILE_ZAD3} ${PLOT_FILE_ZAD3} "Drugi mod własny"
-    # COMMAND python3 ${PLOT_SCRIPT_ZAD6} ${DATA_FILE_ZAD6} ${PLOT_FILE_ZAD6} "Mapa u x,y"
 )

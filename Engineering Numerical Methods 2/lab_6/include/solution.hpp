@@ -6,8 +6,10 @@ void save_global_E(std::ofstream& out); // zapisuje do pliku globalna macierz E 
 void save_global_O(std::ofstream& out); // zapisuje do pliku globalna macierz O calek przekrywania 
 
 void calc_zad_1(std::ofstream &out);
-void calc_zad_2(std::ofstream &E_out, std::ofstream &O_out, std::ofstream &evals_out, std::ofstream &modes_out);
-void calc_zad_3(std::ofstream &out);
-void calc_zad_4(std::ofstream &out);
-void calc_zad_5(std::ofstream &out);
-void calc_zad_6(std::ofstream &out);
+void calc_zad_2(std::ofstream &E_out, std::ofstream &O_out, std::ofstream &evals_out);
+void calc_zad_3();
+void calc_zad_4();
+void calc_zad_5(std::ofstream &out, bool gif=false);
+void calc_zad_6(std::ofstream &out_1, std::ofstream &out_2, std::ofstream &out_3, std::ofstream &out_4, std::ofstream &out_5);
+
+void write_gif_snapshots(std::ofstream &out);

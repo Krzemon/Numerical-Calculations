@@ -15,9 +15,14 @@
 #include <gsl/gsl_eigen.h>
 
 extern "C" {
+    // Rozwiazuje uogolniony symetryczny problem wlasny (dggev_ / dgegv_ dla niesymetrycznych)
     void dsygvd_(int* itype, char* jobz, char* uplo, int* n,
                  double* a, int* lda, double* b, int* ldb,
                  double* w, double* work, int* lwork, int* iwork, int* liwork, int* info);
+    // Rozklad Cholesky'ego
+    void dpotrf_(const char* uplo, const int* n, double* a, const int* lda, int* info);
+    // Rozwiazuje uklad rownan wykorzystujac rozklad Cholesky'ego
+    void dpotrs_(const char* uplo, const int* n, const int* nrhs, double* a, const int* lda, double* b, const int* ldb, int* info);
 }
 
 struct Node {
@@ -39,9 +44,14 @@ extern std::vector<double> g_E; // macierz globalna sztywności
 extern std::vector<double> g_O; // macierz globalna przekrywania
 extern std::vector<std::array<double,9>> g_E_local; // macierz lokalna sztywności
 extern std::vector<std::array<double,9>> g_O_local; // macierz lokalna przekrywania
-
 extern std::vector<double> evals;                   // wartosci wlasne
 extern std::vector<std::vector<double>> evecs;      // wektory wlasne
+extern std::vector<double> c_2;
+extern std::vector<double> c_3;
+extern std::vector<double> g_y0; // wektor startowy
+extern std::vector<double> g_v0; // wektor startowy predkosci
+extern std::vector<std::vector<double>> g_y_snapshots; // 0, Tmax/4, Tmax/2, 3*Tmax/4, Tmax
+extern std::vector<std::vector<double>> gif_snapshots; // wektor danych do gifu
 
 constexpr double DXI = 0.001;
 /**
@@ -84,12 +94,12 @@ const int lg(int elem_idx, int local_node_idx);
 /**
  * @brief Rozwiazuje uklad rownan Ac = b metoda LU z biblioteki GSL
  */
-// void solve_Ac_b(std::vector<std::vector<double>>& A, std::vector<double>& c, std::vector<double>& b, int N);
+std::vector<double> solve_linear_system(const std::vector<double>& A, const std::vector<double>& b);
 
 /**
- * @brief Calkowanie w przestrzeni referencyjnej
+ * @brief Calkowanie z wykorzystaniem kwadratury Gaussa 
  */
-double integrate_over_reference_space(std::function<double(double,double)> f);
+double integrate(std::function<double(double,double)> f);
 
 /**
  * @brief Mapuje element na punkt w przestrzeni fizycznej x oraz y
@@ -129,15 +139,24 @@ void assemble_matrices();
 void apply_boundary_conditions();
 
 /**
- * @brief Calkowanie metoda newmarka
- */
-// void newmark_time_integration(double dt, int n_steps, const std::vector<double>& u0, std::vector<double>& u_curr);
-
-/**
  * @brief Rozwiazuje problem wlasny z wykorzystaniem lapack
  */
-void solve_generalized_eigen_lapack(const double* E, const double* O, int N, std::vector<double>& evals, std::vector<std::vector<double>>& evecs);
+void solve_generalized_eigen_lapack(const double* E, const double* O, int N,
+                                    std::vector<double>& evals,
+                                    std::vector<std::vector<double>>& evecs);
 
+/**
+ * @brief Kopiuje macierz z row-major (src_row) do column-major (dst_col)
+ */
+void row_to_col_major(const double* src_row, double* dst_col, int N);
 
+/**
+ * @brief Faktoryzacja Cholesky macierzy A w orientacji kolumnowej
+ */
+void cholesky_factor(double* A_col, int N);
 
-std::vector<double> solve_linear_system(const std::vector<double>& A, const std::vector<double>& b);
+/**
+ * @brief Rozwiazuje uklad rownan Ax = b, gdzie macierz A jest juz rozkladem Cholesky'ego
+ */
+void solve_cholesky(const double* A_col, double* b, int N);
+

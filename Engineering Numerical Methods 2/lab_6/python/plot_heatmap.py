@@ -6,7 +6,7 @@ import numpy as np
 
 def main():
     if len(sys.argv)!=4:
-        print("Uzycie: python3 plot_zad1.py <plik_danych> <plik_wykresu> <tytul>")
+        print("Uzycie: python3 plot_heatmap.py <plik_danych> <plik_wykresu> <tytul>")
         return
 
     data_file=Path(sys.argv[1])

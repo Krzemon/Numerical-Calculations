@@ -13,6 +13,7 @@
 
 # Program korzysta z zewnętrzych bibliotek:
 #### · GSL (GNU Scientific Library)
+#### · LAPACK
 
 # Katalogi:
 #### · build (należy stworzyć) - Pliki wykonywalne
@@ -23,7 +24,4 @@
 
 ### ...tworzone później
 #### · data - Pliki z wynikami
-#### · plots - Pliki z wykresami
-
-· plot_zad2.py - Skrypt do tworszenia obrazu siatki obliczeniowej elementy, węzły lokalne i globalne (popraw)
- 
+#### · plots - Pliki z wykresami 

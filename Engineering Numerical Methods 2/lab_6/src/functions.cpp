@@ -16,6 +16,12 @@ std::vector<std::array<double,9>> g_E_local;
 std::vector<std::array<double,9>> g_O_local;
 std::vector<double> evals;
 std::vector<std::vector<double>> evecs;
+std::vector<double> c_2;
+std::vector<double> c_3;
+std::vector<double> g_y0;
+std::vector<double> g_v0;
+std::vector<std::vector<double>> g_y_snapshots(5);
+std::vector<std::vector<double>> gif_snapshots(100);
 
 static const double gauss_points[7][2] = {
     { -0.333333333333333, -0.333333333333333 },
@@ -41,32 +47,7 @@ const int lg(int elem_idx, int local_node_idx) {
     return g_elem_nodes[elem_idx][local_node_idx]->idx;
 }
 
-void solve_Ac_b(std::vector<std::vector<double>>& A, std::vector<double>& c, std::vector<double>& b, int N) {
-    gsl_matrix *gsl_A = gsl_matrix_alloc(N, N);
-    gsl_vector *gsl_b = gsl_vector_alloc(N);
-    gsl_vector *gsl_x = gsl_vector_alloc(N);
-
-    for (int i = 0; i < N; ++i) {
-        gsl_vector_set(gsl_b, i, b[i]);
-        for (int j = 0; j < N; ++j)
-            gsl_matrix_set(gsl_A, i, j, A[i][j]);
-    }
-    // Rozwiązywanie (LU)
-    gsl_permutation *p = gsl_permutation_alloc(N);
-    int signum;
-    gsl_linalg_LU_decomp(gsl_A, p, &signum);
-    gsl_linalg_LU_solve(gsl_A, p, gsl_b, gsl_x);
-
-    for (int i = 0; i < N; ++i)
-        c[i] = gsl_vector_get(gsl_x, i);
-
-    gsl_matrix_free(gsl_A);
-    gsl_vector_free(gsl_b);
-    gsl_vector_free(gsl_x);
-    gsl_permutation_free(p);
-}
-
-double integrate_over_reference_space(std::function<double(double,double)> f) {
+double integrate(std::function<double(double,double)> f) {
     double sum = 0.0;
     for(int k=0; k<7; ++k) 
         sum += gauss_weights[k] * f(gauss_points[k][0],gauss_points[k][1]);
@@ -182,13 +163,13 @@ void fill_local_matrices(){
                     return J * (grad_i_x*grad_j_x + grad_i_y*grad_j_y);
                 };
 
-                g_E_local[m][i*3 + j] = integrate_over_reference_space(E_integrand);
+                g_E_local[m][i*3 + j] = integrate(E_integrand);
 
                 auto O_integrand = [m,i,j](double dzeta, double eta){
                     return jacobian(m, dzeta, eta) * phi[i](dzeta, eta) * phi[j](dzeta, eta);
                 };
 
-                g_O_local[m][i*3 + j] = integrate_over_reference_space(O_integrand);
+                g_O_local[m][i*3 + j] = integrate(O_integrand);
             }
         }
     }
@@ -227,25 +208,6 @@ void apply_boundary_conditions(){
     }
 }
 
-// void newmark_time_integration(double dt, int n_steps, const std::vector<double>& u0, std::vector<double>& u_curr){
-//     std::vector<double> u_prev = u0;
-//     u_curr = u0;
-//     std::vector<double> u_next(g_N,0.0);
-//     std::vector<double> RHS(g_N,0.0);
-
-//     for(int n=0;n<n_steps;n++){
-//         for(int i=0;i<g_N;i++){
-//             RHS[i]=0.0;
-//             for(int j=0;j<g_N;j++){
-//                 RHS[i] += 2.0*g_O[i*g_N+j]*u_curr[j] - g_O[i*g_N+j]*u_prev[j] - dt*dt*g_E[i*g_N+j]*u_curr[j];
-//             }
-//         }
-//         u_next = solve_linear_system(g_O,RHS);
-//         u_prev = u_curr;
-//         u_curr = u_next;
-//     }
-// }
-
 std::vector<double> solve_linear_system(const std::vector<double>& A, const std::vector<double>& b){
     int n = b.size();
     gsl_matrix* gA = gsl_matrix_alloc(n,n);
@@ -254,7 +216,8 @@ std::vector<double> solve_linear_system(const std::vector<double>& A, const std:
 
     for(int i=0;i<n;i++){
         gsl_vector_set(gb,i,b[i]);
-        for(int j=0;j<n;j++) gsl_matrix_set(gA,i,j,A[i*n+j]);
+        for(int j=0; j<n; ++j) 
+            gsl_matrix_set(gA,i,j,A[i*n+j]);
     }
 
     gsl_permutation* p = gsl_permutation_alloc(n);
@@ -263,7 +226,8 @@ std::vector<double> solve_linear_system(const std::vector<double>& A, const std:
     gsl_linalg_LU_solve(gA,p,gb,gx);
 
     std::vector<double> x(n);
-    for(int i=0;i<n;i++) x[i]=gsl_vector_get(gx,i);
+    for(int i=0; i<n; ++i) 
+        x[i]=gsl_vector_get(gx,i);
 
     gsl_permutation_free(p);
     gsl_matrix_free(gA);
@@ -272,9 +236,6 @@ std::vector<double> solve_linear_system(const std::vector<double>& A, const std:
     return x;
 }
 
-/**
- * @brief Rozwiazuje problem wlasny z wykorzystaniem lapack
- */
 void solve_generalized_eigen_lapack(const double* E, const double* O, int N,
                                     std::vector<double>& evals,
                                     std::vector<std::vector<double>>& evecs) {
@@ -336,3 +297,34 @@ void solve_generalized_eigen_lapack(const double* E, const double* O, int N,
         }
     }
 }
+
+void row_to_col_major(const double* src_row, double* dst_col, int N){
+    for(int i=0; i<N; ++i){
+        for(int j=0; j<N; ++j){
+            dst_col[j*N + i] = src_row[i*N + j];
+        }
+    }
+}
+
+void cholesky_factor(double* A_col, int N) {
+    char uplo = 'L';
+    int info = 0;
+    dpotrf_(&uplo, &N, A_col, &N, &info);
+    if(info != 0){
+        std::cerr << "Blad w rozkladzie Cholesky'ego: info = " << info << "\n";
+        exit(1);
+    }
+}
+
+void solve_cholesky(const double* A_col, double* b, int N) {
+    char uplo = 'L';
+    int nrhs = 1;
+    int ldb = N;
+    int info = 0;
+    dpotrs_(&uplo, &N, &nrhs, const_cast<double*>(A_col), &N, b, &ldb, &info);
+    if(info != 0){
+        std::cerr << "Blad w rozwiazaniu z wykorzystaniem rozkladu Cholesky'ego: info = " << info << "\n";
+        exit(1);
+    }
+}
+
