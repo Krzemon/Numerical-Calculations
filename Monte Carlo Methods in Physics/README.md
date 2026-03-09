@@ -13,16 +13,9 @@ Celem kursu jest zapoznanie studentów z technikami Monte Carlo oraz ich zastoso
 - Symulacje procesów fizycznych
 - Optymalizacja metodą Monte Carlo
 
-## Wymagania
-
-- Podstawowa znajomość fizyki i matematyki
-- Umiejętność programowania (zalecana znajomość języka Python lub C++)
-- Zainstalowane środowisko programistyczne (np. Python z biblioteką NumPy lub kompilator GCC dla C/C++)
-
 ## Instrukcje uruchomienia
 
 Aby uruchomić przykładowy program, wykonaj następujące kroki:
-
 
 1. Skopiuj poniższy kod źródłowy do pliku `monte_carlo.c`:
 2. Skompiluj program za pomocą kompilatora GCC: `gcc -o monte_carlo monte_carlo.c`
