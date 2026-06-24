@@ -1,0 +1,9 @@
+konfiguracja połączeania
+
+username imie
+haslo nazwisko
+
+ssh -D<login>
+1080 port
+
+na przegladarce reczna konfiguracja serwera proxy
